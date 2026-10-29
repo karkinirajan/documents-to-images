@@ -26,9 +26,12 @@ A comprehensive Python toolkit for converting various document formats into imag
 ## 📋 Requirements
 
 ### System Dependencies
-- Python 3.8 or higher
-- LibreOffice (for DOCX, PPTX, TXT to PDF conversion)
-- wkhtmltopdf (for HTML to PDF conversion)
+- Python 3.10 or higher (tested on 3.10, 3.11, 3.12 and 3.13)
+- poppler (`pdftoppm`) for PDF to image conversion
+- LibreOffice for DOCX and PPTX to PDF conversion
+- wkhtmltopdf for HTML to PDF conversion (upstream has archived the project; it still works where installed)
+
+TXT to PDF and DOCX to HTML need no system tools.
 
 ### Python Dependencies
 All Python dependencies are listed in `requirements.txt` and will be installed automatically.
@@ -41,18 +44,19 @@ git clone https://github.com/kneeraazon404/documents-to-images.git
 cd documents-to-images
 ```
 
-### 2. Create Virtual Environment
+### 2. Install Python Dependencies
+With [uv](https://docs.astral.sh/uv/) (recommended):
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+uv sync
+```
+or with pip:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e .
 ```
 
-### 3. Install Python Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Install System Dependencies
+### 3. Install System Dependencies
 
 #### Ubuntu/Debian
 ```bash
@@ -102,19 +106,17 @@ from doc_converter import DocumentConverter
 converter = DocumentConverter()
 
 # Convert PDF to images
-images = converter.pdf_to_images('document.pdf', output_dir='./images')
+images = converter.pdf_to_images("document.pdf", output_dir="./images")
 
 # Convert DOCX to PDF
-pdf_path = converter.docx_to_pdf('document.docx', output_path='output.pdf')
+pdf_path = converter.docx_to_pdf("document.docx", output_path="output.pdf")
 
 # Convert HTML to PDF
-converter.html_to_pdf('https://example.com', 'webpage.pdf')
+converter.html_to_pdf("https://example.com", "webpage.pdf")
 
 # Batch conversion
 results = converter.batch_convert(
-    input_dir='./documents',
-    output_dir='./converted',
-    target_format='pdf'
+    input_dir="./documents", output_dir="./converted", target_format="pdf"
 )
 ```
 
@@ -137,11 +139,11 @@ documents-to-images/
 │       ├── __init__.py
 │       ├── file_handler.py
 │       └── config.py
-├── tests/                      # Test suite
-│   ├── __init__.py
-│   ├── test_pdf_converter.py
-│   ├── test_docx_converter.py
-│   └── fixtures/               # Test files
+├── tests/                      # Test suite (pytest)
+│   ├── conftest.py             # shared fixtures, skip markers for missing tools
+│   ├── test_core/              # converters, facade, batch processor
+│   ├── test_utils/             # config and file handling
+│   └── test_cli/               # command-line interface
 ├── examples/                   # Example scripts and files
 │   ├── sample_documents/
 │   └── usage_examples.py
@@ -216,18 +218,13 @@ Convert HTML to PDF.
 
 ## 🧪 Testing
 
-Run the test suite:
-
 ```bash
-# Run all tests
-python -m pytest tests/
-
-# Run with coverage
-python -m pytest tests/ --cov=doc_converter
-
-# Run specific test file
-python -m pytest tests/test_pdf_converter.py -v
+uv run pytest                              # all tests
+uv run pytest --cov=doc_converter          # with coverage (about 94%)
+uv run pytest tests/test_core/test_pdf_converter.py -v
 ```
+
+The suite has 112 tests. Tests that need poppler or LibreOffice (real PDF to image and DOCX to PDF conversions) skip themselves when the tool is not installed; the HTML converter is tested with a stubbed `pdfkit`, so wkhtmltopdf is not required. CI runs the suite with warnings treated as errors on Python 3.10 to 3.13.
 
 ## 🤝 Contributing
 
@@ -242,7 +239,7 @@ We welcome contributions! Please follow these steps:
 4. **Add tests** for new functionality
 5. **Run the test suite**
    ```bash
-   python -m pytest tests/
+   uv run pytest
    ```
 6. **Commit your changes**
    ```bash
@@ -257,18 +254,11 @@ We welcome contributions! Please follow these steps:
 ### Development Setup
 
 ```bash
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Install pre-commit hooks
-pre-commit install
-
-# Run code formatting
-black doc_converter/
-isort doc_converter/
-
-# Run linting
-pylint doc_converter/
+uv sync                         # installs the dev group (pytest, ruff, mypy, ...)
+uv run ruff check .             # lint
+uv run ruff format .            # format
+uv run mypy doc_converter       # strict type check
+uv run pytest                   # tests
 ```
 
 ## 📖 Examples

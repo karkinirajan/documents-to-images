@@ -4,7 +4,7 @@ Main Document Converter class that orchestrates all conversion operations.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ..utils.config import Config
 from ..utils.file_handler import FileHandler
@@ -23,14 +23,15 @@ class DocumentConverter:
     document formats including PDF, DOCX, HTML, and images.
     """
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: Config | str | Path | None = None) -> None:
         """
         Initialize the DocumentConverter.
 
         Args:
             config_path: Path to configuration file (optional)
         """
-        self.config = Config(config_path)
+        # accept a ready-made Config (as BatchProcessor passes) as well as a file path
+        self.config = config_path if isinstance(config_path, Config) else Config(config_path)
         self.file_handler = FileHandler()
 
         # Initialize specific converters
@@ -42,11 +43,11 @@ class DocumentConverter:
 
     def pdf_to_images(
         self,
-        pdf_path: Union[str, Path],
-        output_dir: Optional[Union[str, Path]] = None,
+        pdf_path: str | Path,
+        output_dir: str | Path | None = None,
         format: str = "jpeg",
         dpi: int = 200,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Convert PDF pages to image files.
 
@@ -82,8 +83,8 @@ class DocumentConverter:
 
     def docx_to_pdf(
         self,
-        docx_path: Union[str, Path],
-        output_path: Optional[Union[str, Path]] = None,
+        docx_path: str | Path,
+        output_path: str | Path | None = None,
     ) -> str:
         """
         Convert DOCX file to PDF.
@@ -114,8 +115,8 @@ class DocumentConverter:
 
     def pptx_to_pdf(
         self,
-        pptx_path: Union[str, Path],
-        output_path: Optional[Union[str, Path]] = None,
+        pptx_path: str | Path,
+        output_path: str | Path | None = None,
     ) -> str:
         """
         Convert PPTX file to PDF.
@@ -142,14 +143,12 @@ class DocumentConverter:
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        return self.docx_converter.to_pdf(
-            pptx_path, output_path
-        )  # LibreOffice handles PPTX
+        return self.docx_converter.to_pdf(pptx_path, output_path)  # LibreOffice handles PPTX
 
     def txt_to_pdf(
         self,
-        txt_path: Union[str, Path],
-        output_path: Optional[Union[str, Path]] = None,
+        txt_path: str | Path,
+        output_path: str | Path | None = None,
     ) -> str:
         """
         Convert TXT file to PDF.
@@ -181,8 +180,8 @@ class DocumentConverter:
     def html_to_pdf(
         self,
         html_source: str,
-        output_path: Union[str, Path],
-        options: Optional[Dict[str, Any]] = None,
+        output_path: str | Path,
+        options: dict[str, Any] | None = None,
     ) -> str:
         """
         Convert HTML to PDF.
@@ -202,8 +201,8 @@ class DocumentConverter:
 
     def docx_to_html(
         self,
-        docx_path: Union[str, Path],
-        output_path: Optional[Union[str, Path]] = None,
+        docx_path: str | Path,
+        output_path: str | Path | None = None,
     ) -> str:
         """
         Convert DOCX file to HTML.
@@ -232,7 +231,7 @@ class DocumentConverter:
 
         return self.docx_converter.to_html(docx_path, output_path)
 
-    def get_supported_formats(self) -> Dict[str, List[str]]:
+    def get_supported_formats(self) -> dict[str, list[str]]:
         """
         Get dictionary of supported input and output formats.
 

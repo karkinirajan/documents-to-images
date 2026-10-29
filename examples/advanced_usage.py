@@ -193,11 +193,7 @@ def demonstrate_format_support():
             elif conversion_type == "docx_to_html":
                 result = converter.docx_to_html(input_file, output_file)
 
-            print(
-                f"✅ {conversion_type}: {
-                    Path(input_file).name} → {
-                    Path(result).name}"
-            )
+            print(f"✅ {conversion_type}: {Path(input_file).name} → {Path(result).name}")
 
         except Exception as e:
             print(f"❌ {conversion_type} failed: {e}")
@@ -253,9 +249,7 @@ def error_handling_example():
 
     # Test with invalid format
     try:
-        converter.pdf_to_images(
-            "examples/sample_documents/example.pdf", format="invalid"
-        )
+        converter.pdf_to_images("examples/sample_documents/example.pdf", format="invalid")
     except ValueError as e:
         print(f"✅ Caught validation error: {e}")
 
@@ -276,11 +270,7 @@ def error_handling_example():
             target_format="pdf",
         )
 
-        print(
-            f"📊 Mixed results: {
-                results['successful']} success, {
-                results['failed']} failures"
-        )
+        print(f"📊 Mixed results: {results['successful']} success, {results['failed']} failures")
 
     except Exception as e:
         print(f"⚠️  Batch processing handled errors gracefully: {e}")

@@ -6,7 +6,6 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from typing import List, Union
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class FileHandler:
     """
 
     @staticmethod
-    def ensure_directory(path: Union[str, Path]) -> Path:
+    def ensure_directory(path: str | Path) -> Path:
         """
         Ensure a directory exists, creating it if necessary.
 
@@ -59,7 +58,7 @@ class FileHandler:
         return filename
 
     @staticmethod
-    def get_file_size(path: Union[str, Path]) -> int:
+    def get_file_size(path: str | Path) -> int:
         """
         Get file size in bytes.
 
@@ -96,7 +95,7 @@ class FileHandler:
         return f"{size:.1f} {size_names[i]}"
 
     @staticmethod
-    def copy_file(src: Union[str, Path], dst: Union[str, Path]) -> Path:
+    def copy_file(src: str | Path, dst: str | Path) -> Path:
         """
         Copy a file to destination.
 
@@ -122,7 +121,7 @@ class FileHandler:
         return dst
 
     @staticmethod
-    def move_file(src: Union[str, Path], dst: Union[str, Path]) -> Path:
+    def move_file(src: str | Path, dst: str | Path) -> Path:
         """
         Move a file to destination.
 
@@ -148,7 +147,7 @@ class FileHandler:
         return dst
 
     @staticmethod
-    def delete_file(path: Union[str, Path]) -> None:
+    def delete_file(path: str | Path) -> None:
         """
         Delete a file.
 
@@ -162,10 +161,10 @@ class FileHandler:
 
     @staticmethod
     def find_files(
-        directory: Union[str, Path],
-        patterns: List[str],
+        directory: str | Path,
+        patterns: list[str],
         recursive: bool = True,
-    ) -> List[Path]:
+    ) -> list[Path]:
         """
         Find files matching patterns in directory.
 
@@ -178,7 +177,7 @@ class FileHandler:
             List of matching file paths
         """
         directory = Path(directory)
-        files = []
+        files: list[Path] = []
 
         for pattern in patterns:
             if recursive:
@@ -207,7 +206,7 @@ class FileHandler:
         return Path(path)
 
     @staticmethod
-    def create_backup(path: Union[str, Path]) -> Path:
+    def create_backup(path: str | Path) -> Path:
         """
         Create a backup copy of a file.
 

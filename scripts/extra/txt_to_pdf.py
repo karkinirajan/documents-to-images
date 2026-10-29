@@ -6,7 +6,7 @@ pdf.add_page()
 
 pdf.set_font("Arial", size=15)
 
-f = open("mytxt.txt", "r")
+f = open("mytxt.txt")
 
 for x in f:
     pdf.cell(200, 10, txt=x, ln=1, align="C")

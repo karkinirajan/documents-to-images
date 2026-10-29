@@ -77,13 +77,13 @@
 
 2. **Increase DPI for better quality:**
    ```python
-   converter.pdf_to_images('input.pdf', dpi=300)  # Higher quality
+   converter.pdf_to_images("input.pdf", dpi=300)  # Higher quality
    ```
 
 3. **Handle large PDFs:**
    ```python
    # Process specific page range
-   converter.pdf_to_images('large.pdf', first_page=1, last_page=10)
+   converter.pdf_to_images("large.pdf", first_page=1, last_page=10)
    ```
 
 #### DOCX Conversion Issues
@@ -95,8 +95,8 @@
 1. **Check file integrity:**
    ```python
    from pathlib import Path
-   
-   docx_path = Path('document.docx')
+
+   docx_path = Path("document.docx")
    if not docx_path.exists():
        print("File not found")
    elif docx_path.stat().st_size == 0:
@@ -120,30 +120,30 @@
 1. **Adjust page settings:**
    ```python
    options = {
-       'page-size': 'A4',
-       'margin-top': '0.75in',
-       'margin-right': '0.75in',
-       'margin-bottom': '0.75in',
-       'margin-left': '0.75in',
-       'disable-smart-shrinking': '',
+       "page-size": "A4",
+       "margin-top": "0.75in",
+       "margin-right": "0.75in",
+       "margin-bottom": "0.75in",
+       "margin-left": "0.75in",
+       "disable-smart-shrinking": "",
    }
-   converter.html_to_pdf('input.html', 'output.pdf', options=options)
+   converter.html_to_pdf("input.html", "output.pdf", options=options)
    ```
 
 2. **Handle external resources:**
    ```python
    options = {
-       'enable-local-file-access': None,
-       'load-error-handling': 'ignore',
-       'load-media-error-handling': 'ignore'
+       "enable-local-file-access": None,
+       "load-error-handling": "ignore",
+       "load-media-error-handling": "ignore",
    }
    ```
 
 3. **JavaScript issues:**
    ```python
    options = {
-       'javascript-delay': 1000,  # Wait 1 second for JS
-       'no-stop-slow-scripts': None
+       "javascript-delay": 1000,  # Wait 1 second for JS
+       "no-stop-slow-scripts": None,
    }
    ```
 
@@ -164,11 +164,11 @@
    ```python
    # Split large directories into smaller chunks
    processor.convert_directory(
-       input_dir='./large_dir',
-       output_dir='./output',
-       target_format='pdf',
-       file_patterns=['*.docx'],  # Limit file types
-       recursive=False  # Don't process subdirectories
+       input_dir="./large_dir",
+       output_dir="./output",
+       target_format="pdf",
+       file_patterns=["*.docx"],  # Limit file types
+       recursive=False,  # Don't process subdirectories
    )
    ```
 
@@ -183,7 +183,7 @@
 
 1. **Reduce DPI for images:**
    ```python
-   converter.pdf_to_images('large.pdf', dpi=150)  # Lower memory usage
+   converter.pdf_to_images("large.pdf", dpi=150)  # Lower memory usage
    ```
 
 2. **Process pages individually:**
@@ -191,10 +191,7 @@
    # For large PDFs, process page by page
    for page in range(1, total_pages + 1):
        converter.pdf_to_images(
-           'large.pdf',
-           first_page=page,
-           last_page=page,
-           output_dir=f'./output/page_{page}'
+           "large.pdf", first_page=page, last_page=page, output_dir=f"./output/page_{page}"
        )
    ```
 
@@ -202,10 +199,10 @@
    ```python
    import tempfile
    import shutil
-   
+
    # Clean temp directory periodically
    temp_dir = Path(tempfile.gettempdir())
-   for temp_file in temp_dir.glob('doc_converter_*'):
+   for temp_file in temp_dir.glob("doc_converter_*"):
        temp_file.unlink()
    ```
 
@@ -240,16 +237,16 @@
 1. **For TXT to PDF:**
    ```python
    # Specify encoding when reading text files
-   with open('file.txt', 'r', encoding='utf-8') as f:
+   with open("file.txt", "r", encoding="utf-8") as f:
        content = f.read()
    ```
 
 2. **For HTML conversion:**
    ```python
    options = {
-       'encoding': 'UTF-8',
+       "encoding": "UTF-8",
    }
-   converter.html_to_pdf('input.html', 'output.pdf', options=options)
+   converter.html_to_pdf("input.html", "output.pdf", options=options)
    ```
 
 ### Configuration Issues
@@ -277,7 +274,7 @@
 
 2. **Use configuration:**
    ```python
-   converter = DocumentConverter('config.yaml')
+   converter = DocumentConverter("config.yaml")
    ```
 
 ### Debugging Tips
@@ -289,8 +286,7 @@ import logging
 
 # Set up detailed logging
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 # Or use CLI verbose mode
@@ -351,12 +347,14 @@ print(f"Architecture: {platform.architecture()}")
 # Check package versions
 try:
     import pdf2image
+
     print(f"pdf2image version: {pdf2image.__version__}")
 except:
     print("pdf2image not available")
 
 try:
     import PIL
+
     print(f"Pillow version: {PIL.__version__}")
 except:
     print("Pillow not available")

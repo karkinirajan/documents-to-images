@@ -4,9 +4,10 @@ PDF conversion utilities for converting PDFs to images.
 
 import logging
 from pathlib import Path
-from typing import List, Union
 
 from pdf2image import convert_from_path
+
+from ..utils.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class PDFConverter:
     Handles PDF to image conversions using pdf2image library.
     """
 
-    def __init__(self, config=None):
+    def __init__(self, config: Config | None = None) -> None:
         """
         Initialize PDF converter.
 
@@ -28,13 +29,13 @@ class PDFConverter:
 
     def to_images(
         self,
-        pdf_path: Union[str, Path],
-        output_dir: Union[str, Path],
+        pdf_path: str | Path,
+        output_dir: str | Path,
         format: str = "jpeg",
         dpi: int = 200,
-        first_page: int = None,
-        last_page: int = None,
-    ) -> List[str]:
+        first_page: int | None = None,
+        last_page: int | None = None,
+    ) -> list[str]:
         """
         Convert PDF pages to image files.
 
@@ -61,8 +62,13 @@ class PDFConverter:
             logger.info(f"Format: {format}, DPI: {dpi}")
 
             # Convert PDF to images
+            # pdf2image annotates the page arguments as `int` although None (its default) means
+            # "no limit", which is what we pass through.
             images = convert_from_path(
-                pdf_path, dpi=dpi, first_page=first_page, last_page=last_page
+                pdf_path,
+                dpi=dpi,
+                first_page=first_page,  # type: ignore[arg-type]
+                last_page=last_page,  # type: ignore[arg-type]
             )
 
             output_files = []
@@ -84,17 +90,14 @@ class PDFConverter:
                 output_files.append(str(output_path))
                 logger.info(f"Saved: {output_path}")
 
-            logger.info(
-                f"Successfully converted {
-                    len(images)} pages to {format}"
-            )
+            logger.info(f"Successfully converted {len(images)} pages to {format}")
             return output_files
 
         except Exception as e:
             logger.error(f"Failed to convert PDF to images: {e}")
             raise
 
-    def get_page_count(self, pdf_path: Union[str, Path]) -> int:
+    def get_page_count(self, pdf_path: str | Path) -> int:
         """
         Get the number of pages in a PDF file.
 
@@ -108,7 +111,7 @@ class PDFConverter:
             Exception: If unable to read PDF
         """
         try:
-            from PyPDF2 import PdfReader
+            from pypdf import PdfReader
 
             pdf_path = Path(pdf_path)
             reader = PdfReader(str(pdf_path))
@@ -125,17 +128,17 @@ class PDFConverter:
                 return len(images)
             except Exception as e2:
                 logger.error(f"Fallback method also failed: {e2}")
-                raise e
+                raise e2 from e
 
     def extract_page_range(
         self,
-        pdf_path: Union[str, Path],
-        output_dir: Union[str, Path],
+        pdf_path: str | Path,
+        output_dir: str | Path,
         start_page: int,
         end_page: int,
         format: str = "jpeg",
         dpi: int = 200,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Extract a specific range of pages from PDF as images.
 

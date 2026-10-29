@@ -5,17 +5,13 @@ sp.run("clear")
 # sp.run("pwd")
 
 # Convert docx to pdf
-sp.run(
-    ["lowriter", "--convert-to", "pdf", "sample.docx", "--outdir", "./results/doc2pdf"]
-)
+sp.run(["lowriter", "--convert-to", "pdf", "sample.docx", "--outdir", "./results/doc2pdf"])
 
 # convert multiple docx to pdf
 # sp.run(["lowriter", "--convert-to", "pdf", "*.docx"])
 
 # Convert ppts to pdf
-sp.run(
-    ["lowriter", "--convert-to", "pdf", "sample.pptx", "--outdir", "./results/ppt2pdf"]
-)
+sp.run(["lowriter", "--convert-to", "pdf", "sample.pptx", "--outdir", "./results/ppt2pdf"])
 
 # convert multiple ppts to pdf
 # sp.run(["lowriter", "--convert-to", "pdf", "*.pptx"])

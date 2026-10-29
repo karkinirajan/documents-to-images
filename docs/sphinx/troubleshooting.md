@@ -45,11 +45,11 @@ pip install --upgrade documents-to-images-converter
 **Solutions**:
 ```python
 # Increase DPI for better quality
-converter.pdf_to_images('file.pdf', dpi=300)  # Higher quality
-converter.pdf_to_images('file.pdf', dpi=600)  # Very high quality
+converter.pdf_to_images("file.pdf", dpi=300)  # Higher quality
+converter.pdf_to_images("file.pdf", dpi=600)  # Very high quality
 
 # Use PNG for better quality (larger files)
-converter.pdf_to_images('file.pdf', format='png', dpi=300)
+converter.pdf_to_images("file.pdf", format="png", dpi=300)
 ```
 
 **Problem**: Memory errors with large PDFs.
@@ -57,10 +57,10 @@ converter.pdf_to_images('file.pdf', format='png', dpi=300)
 **Solutions**:
 ```python
 # Process page ranges instead of entire document
-converter.pdf_to_images('large.pdf', first_page=1, last_page=10)
+converter.pdf_to_images("large.pdf", first_page=1, last_page=10)
 
 # Use lower DPI for large documents
-converter.pdf_to_images('large.pdf', dpi=150)
+converter.pdf_to_images("large.pdf", dpi=150)
 ```
 
 ### DOCX to PDF Issues
@@ -71,7 +71,7 @@ converter.pdf_to_images('large.pdf', dpi=150)
 ```python
 # Ensure LibreOffice is installed for better formatting
 # Alternative: Use different conversion method
-converter.docx_to_pdf('document.docx', preserve_formatting=True)
+converter.docx_to_pdf("document.docx", preserve_formatting=True)
 ```
 
 **Problem**: Embedded images are missing.
@@ -80,7 +80,7 @@ converter.docx_to_pdf('document.docx', preserve_formatting=True)
 ```python
 # Check if images are embedded properly in source document
 # Try extracting images separately
-converter.docx_to_html('document.docx', extract_images=True)
+converter.docx_to_html("document.docx", extract_images=True)
 ```
 
 ### HTML to PDF Issues
@@ -91,18 +91,18 @@ converter.docx_to_html('document.docx', extract_images=True)
 ```python
 # Add wait time for dynamic content
 converter.html_to_pdf(
-    'https://example.com',
-    'output.pdf',
-    wait_time=5000  # Wait 5 seconds
+    "https://example.com",
+    "output.pdf",
+    wait_time=5000,  # Wait 5 seconds
 )
 
 # Adjust page settings
 converter.html_to_pdf(
-    'file.html',
-    'output.pdf',
-    page_size='A4',
-    orientation='landscape',
-    margins={'top': 20, 'bottom': 20, 'left': 20, 'right': 20}
+    "file.html",
+    "output.pdf",
+    page_size="A4",
+    orientation="landscape",
+    margins={"top": 20, "bottom": 20, "left": 20, "right": 20},
 )
 ```
 
@@ -121,9 +121,9 @@ converter.html_to_pdf(
 ```python
 # Adjust output settings
 converter.pptx_to_pdf(
-    'presentation.pptx',
-    output_format='pdf',
-    slide_size='standard'  # or 'widescreen'
+    "presentation.pptx",
+    output_format="pdf",
+    slide_size="standard",  # or 'widescreen'
 )
 ```
 
@@ -138,15 +138,15 @@ from doc_converter import BatchProcessor
 
 batch = BatchProcessor()
 batch.batch_convert(
-    input_dir='./docs',
-    output_dir='./output',
-    operation='pdf_to_images',
+    input_dir="./docs",
+    output_dir="./output",
+    operation="pdf_to_images",
     parallel=True,
-    max_workers=4
+    max_workers=4,
 )
 
 # Reduce DPI for faster processing
-converter.pdf_to_images('file.pdf', dpi=150)  # Faster, lower quality
+converter.pdf_to_images("file.pdf", dpi=150)  # Faster, lower quality
 ```
 
 ### Memory Usage
@@ -171,16 +171,18 @@ import os
 from pathlib import Path
 
 # Use Path objects for better handling
-file_path = Path('document with spaces & symbols.pdf')
+file_path = Path("document with spaces & symbols.pdf")
 converter.pdf_to_images(str(file_path))
 
 # Sanitize filenames
 import re
 
-def sanitize_filename(filename):
-    return re.sub(r'[<>:"/\\|?*]', '_', filename)
 
-clean_name = sanitize_filename('file:with:colons.pdf')
+def sanitize_filename(filename):
+    return re.sub(r'[<>:"/\\|?*]', "_", filename)
+
+
+clean_name = sanitize_filename("file:with:colons.pdf")
 ```
 
 ### Long File Paths
@@ -190,11 +192,11 @@ clean_name = sanitize_filename('file:with:colons.pdf')
 **Solutions**:
 ```python
 # Use relative paths
-os.chdir('./documents')
-converter.pdf_to_images('file.pdf')
+os.chdir("./documents")
+converter.pdf_to_images("file.pdf")
 
 # Use shorter output directory names
-converter.pdf_to_images('file.pdf', output_dir='./out')
+converter.pdf_to_images("file.pdf", output_dir="./out")
 ```
 
 ## Permission Issues
@@ -234,15 +236,17 @@ sudo chown $USER:$USER input_file.pdf
 **Solutions**:
 ```python
 # Use absolute path
-converter = DocumentConverter(config_file='/absolute/path/to/config.yaml')
+converter = DocumentConverter(config_file="/absolute/path/to/config.yaml")
 
 # Check current working directory
 import os
+
 print(os.getcwd())
 
 # Verify file exists
 from pathlib import Path
-config_path = Path('config.yaml')
+
+config_path = Path("config.yaml")
 print(f"Config exists: {config_path.exists()}")
 ```
 

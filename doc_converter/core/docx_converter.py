@@ -5,10 +5,11 @@ DOCX conversion utilities for converting DOCX files to various formats.
 import logging
 import subprocess
 from pathlib import Path
-from typing import Union
 
 import mammoth
 from fpdf import FPDF
+
+from ..utils.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class DOCXConverter:
     Handles DOCX conversions using LibreOffice and other libraries.
     """
 
-    def __init__(self, config=None):
+    def __init__(self, config: Config | None = None) -> None:
         """
         Initialize DOCX converter.
 
@@ -51,9 +52,7 @@ class DOCXConverter:
 
         for path in possible_paths:
             try:
-                result = subprocess.run(
-                    [path, "--version"], capture_output=True, timeout=10
-                )
+                result = subprocess.run([path, "--version"], capture_output=True, timeout=10)
                 if result.returncode == 0:
                     logger.info(f"Found LibreOffice at: {path}")
                     return path
@@ -64,9 +63,7 @@ class DOCXConverter:
             "LibreOffice not found. Please install LibreOffice and ensure it's in PATH."
         )
 
-    def to_pdf(
-        self, input_path: Union[str, Path], output_path: Union[str, Path]
-    ) -> str:
+    def to_pdf(self, input_path: str | Path, output_path: str | Path) -> str:
         """
         Convert DOCX/PPTX file to PDF using LibreOffice.
 
@@ -130,14 +127,14 @@ class DOCXConverter:
             logger.info(f"Successfully created PDF: {output_path}")
             return str(output_path)
 
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as e:
             logger.error("LibreOffice conversion timed out")
-            raise RuntimeError("Conversion timed out after 5 minutes")
+            raise RuntimeError("Conversion timed out after 5 minutes") from e
         except Exception as e:
             logger.error(f"Failed to convert to PDF: {e}")
             raise
 
-    def to_html(self, docx_path: Union[str, Path], html_path: Union[str, Path]) -> str:
+    def to_html(self, docx_path: str | Path, html_path: str | Path) -> str:
         """
         Convert DOCX file to HTML using mammoth.
 
@@ -180,7 +177,7 @@ class DOCXConverter:
             logger.error(f"Failed to convert DOCX to HTML: {e}")
             raise
 
-    def txt_to_pdf(self, txt_path: Union[str, Path], pdf_path: Union[str, Path]) -> str:
+    def txt_to_pdf(self, txt_path: str | Path, pdf_path: str | Path) -> str:
         """
         Convert TXT file to PDF using FPDF.
 
@@ -206,10 +203,10 @@ class DOCXConverter:
             # Create PDF
             pdf = FPDF()
             pdf.add_page()
-            pdf.set_font("Arial", size=12)
+            pdf.set_font("Helvetica", size=12)
 
             # Read text file and add to PDF
-            with open(txt_path, "r", encoding="utf-8", errors="ignore") as txt_file:
+            with open(txt_path, encoding="utf-8", errors="ignore") as txt_file:
                 for line in txt_file:
                     # Handle encoding issues and long lines
                     try:
@@ -219,11 +216,13 @@ class DOCXConverter:
 
                         # Split long lines
                         while len(line) > 80:
-                            pdf.cell(0, 10, txt=line[:80], ln=True, align="L")
+                            pdf.cell(
+                                0, 10, text=line[:80], new_x="LMARGIN", new_y="NEXT", align="L"
+                            )
                             line = line[80:]
 
                         if line:
-                            pdf.cell(0, 10, txt=line, ln=True, align="L")
+                            pdf.cell(0, 10, text=line, new_x="LMARGIN", new_y="NEXT", align="L")
                     except Exception as line_error:
                         logger.warning(f"Skipped problematic line: {line_error}")
                         continue

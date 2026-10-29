@@ -2,9 +2,10 @@
 Configuration management utilities.
 """
 
+import copy
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 import yaml
 
@@ -40,14 +41,15 @@ class Config:
         },
     }
 
-    def __init__(self, config_path: Optional[Union[str, Path]] = None):
+    def __init__(self, config_path: str | Path | None = None):
         """
         Initialize configuration.
 
         Args:
             config_path: Path to configuration file (optional)
         """
-        self.config_data = self.DEFAULT_CONFIG.copy()
+        # deep copy: a shallow copy shares the nested dicts, so set()/load would edit the defaults
+        self.config_data = copy.deepcopy(self.DEFAULT_CONFIG)
 
         if config_path:
             self.load_from_file(config_path)
@@ -55,7 +57,7 @@ class Config:
         self._setup_logging()
         logger.info("Configuration initialized")
 
-    def load_from_file(self, config_path: Union[str, Path]) -> None:
+    def load_from_file(self, config_path: str | Path) -> None:
         """
         Load configuration from YAML file.
 
@@ -69,12 +71,10 @@ class Config:
         config_path = Path(config_path)
 
         if not config_path.exists():
-            raise FileNotFoundError(
-                f"Configuration file not found: {config_path}"
-            )
+            raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 user_config = yaml.safe_load(f)
 
             if user_config:
@@ -85,7 +85,7 @@ class Config:
             logger.error(f"Invalid YAML in config file: {e}")
             raise
 
-    def save_to_file(self, config_path: Union[str, Path]) -> None:
+    def save_to_file(self, config_path: str | Path) -> None:
         """
         Save current configuration to YAML file.
 
@@ -97,9 +97,7 @@ class Config:
 
         try:
             with open(config_path, "w", encoding="utf-8") as f:
-                yaml.dump(
-                    self.config_data, f, default_flow_style=False, indent=2
-                )
+                yaml.dump(self.config_data, f, default_flow_style=False, indent=2)
 
             logger.info(f"Configuration saved to: {config_path}")
 
@@ -119,7 +117,7 @@ class Config:
             Configuration value
         """
         keys = key.split(".")
-        value = self.config_data
+        value: Any = self.config_data
 
         try:
             for k in keys:
@@ -137,7 +135,7 @@ class Config:
             value: Value to set
         """
         keys = key.split(".")
-        config = self.config_data
+        config: Any = self.config_data
 
         # Navigate to parent of final key
         for k in keys[:-1]:
@@ -149,9 +147,7 @@ class Config:
         config[keys[-1]] = value
         logger.debug(f"Set configuration: {key} = {value}")
 
-    def _merge_config(
-        self, base: Dict[str, Any], override: Dict[str, Any]
-    ) -> None:
+    def _merge_config(self, base: dict[str, Any], override: dict[str, Any]) -> None:
         """
         Recursively merge configuration dictionaries.
 
@@ -160,11 +156,7 @@ class Config:
             override: Override configuration dictionary
         """
         for key, value in override.items():
-            if (
-                key in base
-                and isinstance(base[key], dict)
-                and isinstance(value, dict)
-            ):
+            if key in base and isinstance(base[key], dict) and isinstance(value, dict):
                 self._merge_config(base[key], value)
             else:
                 base[key] = value
@@ -185,47 +177,52 @@ class Config:
             force=True,  # Override any existing configuration
         )
 
-    def get_output_config(self) -> Dict[str, Any]:
+    def get_output_config(self) -> dict[str, Any]:
         """
         Get output-related configuration.
 
         Returns:
             Dictionary with output configuration
         """
-        return self.get("output", {})
+        result: dict[str, Any] = self.get("output", {})
+        return result
 
-    def get_conversion_config(self) -> Dict[str, Any]:
+    def get_conversion_config(self) -> dict[str, Any]:
         """
         Get conversion-related configuration.
 
         Returns:
             Dictionary with conversion configuration
         """
-        return self.get("conversion", {})
+        result: dict[str, Any] = self.get("conversion", {})
+        return result
 
-    def get_paths_config(self) -> Dict[str, Any]:
+    def get_paths_config(self) -> dict[str, Any]:
         """
         Get paths-related configuration.
 
         Returns:
             Dictionary with paths configuration
         """
-        return self.get("paths", {})
+        result: dict[str, Any] = self.get("paths", {})
+        return result
 
-    def get_libreoffice_config(self) -> Dict[str, Any]:
+    def get_libreoffice_config(self) -> dict[str, Any]:
         """
         Get LibreOffice-related configuration.
 
         Returns:
             Dictionary with LibreOffice configuration
         """
-        return self.get("libreoffice", {})
+        result: dict[str, Any] = self.get("libreoffice", {})
+        return result
 
-    def get_wkhtmltopdf_config(self) -> Dict[str, Any]:
+    def get_wkhtmltopdf_config(self) -> dict[str, Any]:
         """
         Get wkhtmltopdf-related configuration.
 
         Returns:
             Dictionary with wkhtmltopdf configuration
         """
-        return self.get("wkhtmltopdf", {})
+        result: dict[str, Any] = self.get("wkhtmltopdf", {})
+        return result

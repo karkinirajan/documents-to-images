@@ -92,17 +92,18 @@ import pytest
 from doc_converter import DocumentConverter
 from doc_converter.exceptions import ConversionError
 
+
 class TestPDFConverter:
     def test_pdf_to_images_success(self, sample_pdf):
         converter = DocumentConverter()
         images = converter.pdf_to_images(sample_pdf)
         assert len(images) > 0
-        assert all(img.endswith(('.jpg', '.jpeg', '.png')) for img in images)
-    
+        assert all(img.endswith((".jpg", ".jpeg", ".png")) for img in images)
+
     def test_pdf_to_images_invalid_file(self):
         converter = DocumentConverter()
         with pytest.raises(ConversionError):
-            converter.pdf_to_images('nonexistent.pdf')
+            converter.pdf_to_images("nonexistent.pdf")
 ```
 
 ## Contributing Guidelines
@@ -192,13 +193,13 @@ from pathlib import Path
 from typing import Union, Optional
 from ..exceptions import ConversionError
 
+
 class XYZConverter:
     """Convert XYZ format to other formats."""
-    
-    def xyz_to_pdf(self, 
-                   input_path: Union[str, Path], 
-                   output_path: Optional[Union[str, Path]] = None,
-                   **kwargs) -> str:
+
+    def xyz_to_pdf(
+        self, input_path: Union[str, Path], output_path: Optional[Union[str, Path]] = None, **kwargs
+    ) -> str:
         """Convert XYZ file to PDF."""
         # Implementation here
         pass

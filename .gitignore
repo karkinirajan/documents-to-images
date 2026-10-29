@@ -157,3 +157,9 @@ page*.png
 *.pdf
 *.html
 !examples/sample_documents/*
+
+# Generated docs build and local env
+docs/sphinx/_build/
+.venv/
+.ruff_cache/
+.mypy_cache/

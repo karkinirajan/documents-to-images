@@ -12,15 +12,15 @@ from doc_converter import DocumentConverter
 converter = DocumentConverter()
 
 # Single file conversion
-images = converter.pdf_to_images('document.pdf')
+images = converter.pdf_to_images("document.pdf")
 
 # With custom settings
 images = converter.pdf_to_images(
-    'document.pdf',
-    format='jpeg',     # 'jpeg' or 'png'
-    dpi=300,          # Image resolution
-    first_page=1,     # Start page
-    last_page=5       # End page
+    "document.pdf",
+    format="jpeg",  # 'jpeg' or 'png'
+    dpi=300,  # Image resolution
+    first_page=1,  # Start page
+    last_page=5,  # End page
 )
 
 print(f"Generated {len(images)} images")
@@ -30,23 +30,23 @@ print(f"Generated {len(images)} images")
 
 ```python
 # Word document to PDF
-pdf_path = converter.docx_to_pdf('document.docx')
+pdf_path = converter.docx_to_pdf("document.docx")
 
 # PowerPoint to PDF
-pdf_path = converter.pptx_to_pdf('presentation.pptx')
+pdf_path = converter.pptx_to_pdf("presentation.pptx")
 
 # Text file to PDF
-pdf_path = converter.txt_to_pdf('notes.txt')
+pdf_path = converter.txt_to_pdf("notes.txt")
 ```
 
 ### HTML to PDF Conversion
 
 ```python
 # Convert HTML file
-converter.html_to_pdf('report.html', 'report.pdf')
+converter.html_to_pdf("report.html", "report.pdf")
 
 # Convert web page
-converter.html_to_pdf('https://example.com', 'webpage.pdf')
+converter.html_to_pdf("https://example.com", "webpage.pdf")
 ```
 
 ### Batch Processing
@@ -57,18 +57,10 @@ from doc_converter import BatchProcessor
 batch = BatchProcessor()
 
 # Convert all PDFs in a directory to images
-batch.batch_convert(
-    input_dir='./documents',
-    output_dir='./images',
-    operation='pdf_to_images'
-)
+batch.batch_convert(input_dir="./documents", output_dir="./images", operation="pdf_to_images")
 
 # Convert all DOCX files to PDF
-batch.batch_convert(
-    input_dir='./word_docs',
-    output_dir='./pdfs',
-    operation='docx_to_pdf'
-)
+batch.batch_convert(input_dir="./word_docs", output_dir="./pdfs", operation="docx_to_pdf")
 ```
 
 ## Command Line Usage
@@ -123,7 +115,7 @@ Use the config:
 ```python
 from doc_converter import DocumentConverter
 
-converter = DocumentConverter(config_file='config.yaml')
+converter = DocumentConverter(config_file="config.yaml")
 ```
 
 ## Error Handling
@@ -134,7 +126,7 @@ from doc_converter import DocumentConverter, ConversionError
 converter = DocumentConverter()
 
 try:
-    images = converter.pdf_to_images('document.pdf')
+    images = converter.pdf_to_images("document.pdf")
 except ConversionError as e:
     print(f"Conversion failed: {e}")
 except FileNotFoundError:

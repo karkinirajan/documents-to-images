@@ -60,5 +60,6 @@ Or in Python:
 
 ```python
 import doc_converter
+
 print(doc_converter.__version__)
 ```

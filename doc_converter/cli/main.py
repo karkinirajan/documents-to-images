@@ -5,6 +5,7 @@ Command-line interface for document converter.
 import argparse
 import logging
 import sys
+from pathlib import Path
 
 from ..core.batch_processor import BatchProcessor
 from ..core.document_converter import DocumentConverter
@@ -12,7 +13,7 @@ from ..core.document_converter import DocumentConverter
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: str = "INFO"):
+def setup_logging(level: str = "INFO") -> None:
     """Setup logging configuration."""
     logging.basicConfig(
         level=getattr(logging, level.upper()),
@@ -21,7 +22,7 @@ def setup_logging(level: str = "INFO"):
     )
 
 
-def progress_callback(current: int, total: int, filename: str = ""):
+def progress_callback(current: int, total: int, filename: str = "") -> None:
     """Progress callback for batch operations."""
     percentage = (current / total) * 100
     print(
@@ -33,7 +34,7 @@ def progress_callback(current: int, total: int, filename: str = ""):
         print()  # New line when complete
 
 
-def convert_pdf_to_images(args):
+def convert_pdf_to_images(args: argparse.Namespace) -> None:
     """Convert PDF to images command."""
     converter = DocumentConverter()
 
@@ -46,48 +47,45 @@ def convert_pdf_to_images(args):
         )
 
         print(f"✅ Successfully converted PDF to {len(output_files)} images")
-        print(f"📁 Output directory: {args.output_dir}")
+        default_dir = Path(args.input).with_name(f"{Path(args.input).stem}_images")
+        print(f"📁 Output directory: {args.output_dir or default_dir}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def convert_docx_to_pdf(args):
+def convert_docx_to_pdf(args: argparse.Namespace) -> None:
     """Convert DOCX to PDF command."""
     converter = DocumentConverter()
 
     try:
-        output_file = converter.docx_to_pdf(
-            docx_path=args.input, output_path=args.output
-        )
+        output_file = converter.docx_to_pdf(docx_path=args.input, output_path=args.output)
 
         print("✅ Successfully converted DOCX to PDF")
         print(f"📄 Output file: {output_file}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def convert_pptx_to_pdf(args):
+def convert_pptx_to_pdf(args: argparse.Namespace) -> None:
     """Convert PPTX to PDF command."""
     converter = DocumentConverter()
 
     try:
-        output_file = converter.pptx_to_pdf(
-            pptx_path=args.input, output_path=args.output
-        )
+        output_file = converter.pptx_to_pdf(pptx_path=args.input, output_path=args.output)
 
         print("✅ Successfully converted PPTX to PDF")
         print(f"📄 Output file: {output_file}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def convert_txt_to_pdf(args):
+def convert_txt_to_pdf(args: argparse.Namespace) -> None:
     """Convert TXT to PDF command."""
     converter = DocumentConverter()
 
@@ -98,11 +96,11 @@ def convert_txt_to_pdf(args):
         print(f"📄 Output file: {output_file}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def convert_html_to_pdf(args):
+def convert_html_to_pdf(args: argparse.Namespace) -> None:
     """Convert HTML to PDF command."""
     converter = DocumentConverter()
 
@@ -117,28 +115,26 @@ def convert_html_to_pdf(args):
         print(f"📄 Output file: {output_file}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def convert_docx_to_html(args):
+def convert_docx_to_html(args: argparse.Namespace) -> None:
     """Convert DOCX to HTML command."""
     converter = DocumentConverter()
 
     try:
-        output_file = converter.docx_to_html(
-            docx_path=args.input, output_path=args.output
-        )
+        output_file = converter.docx_to_html(docx_path=args.input, output_path=args.output)
 
         print("✅ Successfully converted DOCX to HTML")
         print(f"📄 Output file: {output_file}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def batch_convert(args):
+def batch_convert(args: argparse.Namespace) -> None:
     """Batch convert command."""
     processor = BatchProcessor(max_workers=args.workers)
 
@@ -168,12 +164,12 @@ def batch_convert(args):
                 print(f"   - {error['file']}: {error['error']}")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def main():
-    """Main CLI entry point."""
+def main(argv: list[str] | None = None) -> None:
+    """Main CLI entry point. ``argv`` defaults to ``sys.argv[1:]``."""
     parser = argparse.ArgumentParser(
         description=("Document Converter - Convert documents between various formats"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -195,20 +191,14 @@ Examples:
         """,
     )
 
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose logging"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # PDF to images
-    pdf_to_img_parser = subparsers.add_parser(
-        "pdf-to-images", help="Convert PDF to images"
-    )
+    pdf_to_img_parser = subparsers.add_parser("pdf-to-images", help="Convert PDF to images")
     pdf_to_img_parser.add_argument("input", help="Input PDF file")
-    pdf_to_img_parser.add_argument(
-        "--output-dir", "-o", help="Output directory for images"
-    )
+    pdf_to_img_parser.add_argument("--output-dir", "-o", help="Output directory for images")
     pdf_to_img_parser.add_argument(
         "--format",
         "-f",
@@ -216,23 +206,17 @@ Examples:
         default="jpeg",
         help="Output format",
     )
-    pdf_to_img_parser.add_argument(
-        "--dpi", type=int, default=200, help="Resolution in DPI"
-    )
+    pdf_to_img_parser.add_argument("--dpi", type=int, default=200, help="Resolution in DPI")
     pdf_to_img_parser.set_defaults(func=convert_pdf_to_images)
 
     # DOCX to PDF
-    docx_to_pdf_parser = subparsers.add_parser(
-        "docx-to-pdf", help="Convert DOCX to PDF"
-    )
+    docx_to_pdf_parser = subparsers.add_parser("docx-to-pdf", help="Convert DOCX to PDF")
     docx_to_pdf_parser.add_argument("input", help="Input DOCX file")
     docx_to_pdf_parser.add_argument("--output", "-o", help="Output PDF file")
     docx_to_pdf_parser.set_defaults(func=convert_docx_to_pdf)
 
     # PPTX to PDF
-    pptx_to_pdf_parser = subparsers.add_parser(
-        "pptx-to-pdf", help="Convert PPTX to PDF"
-    )
+    pptx_to_pdf_parser = subparsers.add_parser("pptx-to-pdf", help="Convert PPTX to PDF")
     pptx_to_pdf_parser.add_argument("input", help="Input PPTX file")
     pptx_to_pdf_parser.add_argument("--output", "-o", help="Output PDF file")
     pptx_to_pdf_parser.set_defaults(func=convert_pptx_to_pdf)
@@ -244,31 +228,21 @@ Examples:
     txt_to_pdf_parser.set_defaults(func=convert_txt_to_pdf)
 
     # HTML to PDF
-    html_to_pdf_parser = subparsers.add_parser(
-        "html-to-pdf", help="Convert HTML to PDF"
-    )
+    html_to_pdf_parser = subparsers.add_parser("html-to-pdf", help="Convert HTML to PDF")
     html_to_pdf_parser.add_argument("input", help="Input HTML file or URL")
-    html_to_pdf_parser.add_argument(
-        "--output", "-o", required=True, help="Output PDF file"
-    )
+    html_to_pdf_parser.add_argument("--output", "-o", required=True, help="Output PDF file")
     html_to_pdf_parser.set_defaults(func=convert_html_to_pdf)
 
     # DOCX to HTML
-    docx_to_html_parser = subparsers.add_parser(
-        "docx-to-html", help="Convert DOCX to HTML"
-    )
+    docx_to_html_parser = subparsers.add_parser("docx-to-html", help="Convert DOCX to HTML")
     docx_to_html_parser.add_argument("input", help="Input DOCX file")
     docx_to_html_parser.add_argument("--output", "-o", help="Output HTML file")
     docx_to_html_parser.set_defaults(func=convert_docx_to_html)
 
     # Batch convert
     batch_parser = subparsers.add_parser("batch-convert", help="Batch convert files")
-    batch_parser.add_argument(
-        "--input-dir", "-i", required=True, help="Input directory"
-    )
-    batch_parser.add_argument(
-        "--output-dir", "-o", required=True, help="Output directory"
-    )
+    batch_parser.add_argument("--input-dir", "-i", required=True, help="Input directory")
+    batch_parser.add_argument("--output-dir", "-o", required=True, help="Output directory")
     batch_parser.add_argument(
         "--format",
         "-f",
@@ -290,7 +264,7 @@ Examples:
     batch_parser.set_defaults(func=batch_convert)
 
     # Parse arguments
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.command:
         parser.print_help()

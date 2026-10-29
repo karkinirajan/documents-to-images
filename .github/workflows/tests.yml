@@ -2,88 +2,42 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install system dependencies (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libreoffice wkhtmltopdf poppler-utils
-    
-    - name: Install system dependencies (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install libreoffice poppler
-        # Note: wkhtmltopdf has been discontinued upstream as of Dec 2024
-        # We'll skip it for now as it's not critical for basic functionality
-        
-    - name: Install system dependencies (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        # Note: For Windows, LibreOffice and wkhtmltopdf need to be installed manually
-        # or through chocolatey in a real CI environment
-        echo "Windows dependencies would be installed here"
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[test]
-    
-    - name: Run tests with pytest
-      run: |
-        pytest tests/ -v --cov=doc_converter --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: System tools for the integration tests (they skip themselves if absent)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils libreoffice-writer
+      - run: uv sync --frozen
+      - name: Tests (warnings are errors)
+        run: uv run pytest -W error --cov=doc_converter --cov-report=xml
+      - name: Upload coverage
+        if: matrix.python-version == '3.13'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
 
   lint:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[dev]
-    
-    - name: Run black
-      run: black --check doc_converter/ tests/ examples/
-    
-    - name: Run isort
-      run: isort --check-only doc_converter/ tests/ examples/
-    
-    - name: Run flake8
-      run: flake8 doc_converter/ tests/ examples/
-    
-    - name: Run mypy
-      run: mypy doc_converter/
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy doc_converter

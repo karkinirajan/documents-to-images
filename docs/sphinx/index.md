@@ -44,13 +44,13 @@ from doc_converter import DocumentConverter
 converter = DocumentConverter()
 
 # Convert PDF to images
-images = converter.pdf_to_images('document.pdf', format='jpeg', dpi=300)
+images = converter.pdf_to_images("document.pdf", format="jpeg", dpi=300)
 
-# Convert DOCX to PDF  
-pdf = converter.docx_to_pdf('document.docx')
+# Convert DOCX to PDF
+pdf = converter.docx_to_pdf("document.docx")
 
 # Convert HTML to PDF
-converter.html_to_pdf('https://example.com', 'webpage.pdf')
+converter.html_to_pdf("https://example.com", "webpage.pdf")
 ```
 
 ### Command Line

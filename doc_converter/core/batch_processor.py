@@ -4,10 +4,12 @@ Batch processing utilities for handling multiple file conversions.
 
 import logging
 import threading
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
+from ..utils.config import Config
 from .document_converter import DocumentConverter
 
 logger = logging.getLogger(__name__)
@@ -18,7 +20,7 @@ class BatchProcessor:
     Handles batch conversion operations with progress tracking and parallel processing.
     """
 
-    def __init__(self, config=None, max_workers: int = 4):
+    def __init__(self, config: Config | None = None, max_workers: int = 4) -> None:
         """
         Initialize batch processor.
 
@@ -34,13 +36,13 @@ class BatchProcessor:
 
     def convert_directory(
         self,
-        input_dir: Union[str, Path],
-        output_dir: Union[str, Path],
+        input_dir: str | Path,
+        output_dir: str | Path,
         target_format: str,
-        file_patterns: Optional[List[str]] = None,
+        file_patterns: list[str] | None = None,
         recursive: bool = True,
-        progress_callback: Optional[Callable[[int, int, str], None]] = None,
-    ) -> Dict[str, Any]:
+        progress_callback: Callable[[int, int, str], None] | None = None,
+    ) -> dict[str, Any]:
         """
         Convert all supported files in a directory to target format.
 
@@ -89,11 +91,11 @@ class BatchProcessor:
 
     def convert_file_list(
         self,
-        file_list: List[Union[str, Path]],
-        output_dir: Union[str, Path],
+        file_list: list[str | Path],
+        output_dir: str | Path,
         target_format: str,
-        progress_callback: Optional[Callable[[int, int, str], None]] = None,
-    ) -> Dict[str, Any]:
+        progress_callback: Callable[[int, int, str], None] | None = None,
+    ) -> dict[str, Any]:
         """
         Convert a specific list of files to target format.
 
@@ -123,8 +125,8 @@ class BatchProcessor:
         )
 
     def _find_files(
-        self, directory: Path, patterns: Optional[List[str]], recursive: bool
-    ) -> List[Path]:
+        self, directory: Path, patterns: list[str] | None, recursive: bool
+    ) -> list[Path]:
         """
         Find files matching the specified patterns.
 
@@ -140,7 +142,7 @@ class BatchProcessor:
             # Default supported extensions
             patterns = ["*.pdf", "*.docx", "*.pptx", "*.txt", "*.html"]
 
-        files = []
+        files: list[Path] = []
 
         for pattern in patterns:
             if recursive:
@@ -156,11 +158,11 @@ class BatchProcessor:
 
     def _process_files_parallel(
         self,
-        files: List[Path],
+        files: list[Path],
         output_dir: Path,
         target_format: str,
-        progress_callback: Optional[Callable[[int, int, str], None]],
-    ) -> Dict[str, Any]:
+        progress_callback: Callable[[int, int, str], None] | None,
+    ) -> dict[str, Any]:
         """
         Process files in parallel using ThreadPoolExecutor.
 
@@ -173,7 +175,7 @@ class BatchProcessor:
         Returns:
             Processing results
         """
-        results = {
+        results: dict[str, Any] = {
             "total_files": len(files),
             "successful": 0,
             "failed": 0,
@@ -183,7 +185,7 @@ class BatchProcessor:
 
         completed_count = 0
 
-        def update_progress(filename: str = ""):
+        def update_progress(filename: str = "") -> None:
             nonlocal completed_count
             with self._progress_lock:
                 completed_count += 1
@@ -230,7 +232,7 @@ class BatchProcessor:
 
     def _convert_single_file(
         self, input_file: Path, output_dir: Path, target_format: str
-    ) -> Dict[str, str]:
+    ) -> dict[str, Any]:
         """
         Convert a single file to the target format.
 
@@ -278,9 +280,7 @@ class BatchProcessor:
                 elif input_ext == "txt":
                     result_path = self.converter.txt_to_pdf(input_file, output_file)
                 elif input_ext == "html":
-                    result_path = self.converter.html_to_pdf(
-                        str(input_file), output_file
-                    )
+                    result_path = self.converter.html_to_pdf(str(input_file), output_file)
                 else:
                     raise ValueError(f"Cannot convert {input_ext} to PDF")
 

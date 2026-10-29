@@ -37,7 +37,7 @@ Convert PDF pages to image files.
 from doc_converter import DocumentConverter
 
 converter = DocumentConverter()
-images = converter.pdf_to_images('document.pdf', output_dir='./images', format='jpeg', dpi=300)
+images = converter.pdf_to_images("document.pdf", output_dir="./images", format="jpeg", dpi=300)
 print(f"Created {len(images)} images")
 ```
 
@@ -58,7 +58,7 @@ Convert DOCX file to PDF.
 **Example:**
 ```python
 converter = DocumentConverter()
-pdf_path = converter.docx_to_pdf('document.docx', 'output.pdf')
+pdf_path = converter.docx_to_pdf("document.docx", "output.pdf")
 ```
 
 #### `pptx_to_pdf(pptx_path, output_path=None)`
@@ -98,14 +98,14 @@ Convert HTML to PDF.
 **Example:**
 ```python
 # Convert local HTML file
-converter.html_to_pdf('page.html', 'output.pdf')
+converter.html_to_pdf("page.html", "output.pdf")
 
 # Convert URL
-converter.html_to_pdf('https://example.com', 'webpage.pdf')
+converter.html_to_pdf("https://example.com", "webpage.pdf")
 
 # With custom options
-options = {'page-size': 'A4', 'margin-top': '1in'}
-converter.html_to_pdf('page.html', 'output.pdf', options=options)
+options = {"page-size": "A4", "margin-top": "1in"}
+converter.html_to_pdf("page.html", "output.pdf", options=options)
 ```
 
 #### `docx_to_html(docx_path, output_path=None)`
@@ -165,14 +165,16 @@ from doc_converter.core.batch_processor import BatchProcessor
 
 processor = BatchProcessor(max_workers=2)
 
+
 def progress_callback(current, total, filename):
     print(f"Progress: {current}/{total} - {filename}")
 
+
 results = processor.convert_directory(
-    input_dir='./documents',
-    output_dir='./converted',
-    target_format='pdf',
-    progress_callback=progress_callback
+    input_dir="./documents",
+    output_dir="./converted",
+    target_format="pdf",
+    progress_callback=progress_callback,
 )
 
 print(f"Converted {results['successful']} files successfully")
@@ -214,14 +216,14 @@ from doc_converter.utils.config import Config
 config = Config()
 
 # Load from file
-config = Config('config.yaml')
+config = Config("config.yaml")
 
 # Get configuration values
-image_format = config.get('output.image_format')
-max_workers = config.get('conversion.max_workers', 4)
+image_format = config.get("output.image_format")
+max_workers = config.get("conversion.max_workers", 4)
 
 # Set configuration values
-config.set('output.image_dpi', 300)
+config.set("output.image_dpi", 300)
 ```
 
 ---

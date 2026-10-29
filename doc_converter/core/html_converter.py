@@ -5,9 +5,11 @@ HTML conversion utilities for converting HTML to PDF.
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 import pdfkit
+
+from ..utils.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +19,7 @@ class HTMLConverter:
     Handles HTML to PDF conversions using pdfkit (wkhtmltopdf).
     """
 
-    def __init__(self, config=None):
+    def __init__(self, config: Config | None = None) -> None:
         """
         Initialize HTML converter.
 
@@ -28,7 +30,7 @@ class HTMLConverter:
         self.wkhtmltopdf_path = self._find_wkhtmltopdf()
         logger.info("HTMLConverter initialized")
 
-    def _find_wkhtmltopdf(self) -> Optional[str]:
+    def _find_wkhtmltopdf(self) -> str | None:
         """
         Find wkhtmltopdf executable path.
 
@@ -68,8 +70,8 @@ class HTMLConverter:
     def to_pdf(
         self,
         html_source: str,
-        output_path: Union[str, Path],
-        options: Optional[Dict[str, Any]] = None,
+        output_path: str | Path,
+        options: dict[str, Any] | None = None,
     ) -> str:
         """
         Convert HTML to PDF.
@@ -113,9 +115,7 @@ class HTMLConverter:
             # Configuration for pdfkit
             config = None
             if self.wkhtmltopdf_path:
-                config = pdfkit.configuration(
-                    wkhtmltopdf=self.wkhtmltopdf_path
-                )
+                config = pdfkit.configuration(wkhtmltopdf=self.wkhtmltopdf_path)
 
             # Determine if input is URL or file path
             if html_source.startswith(("http://", "https://")):
@@ -131,9 +131,7 @@ class HTMLConverter:
                 # File path
                 html_path = Path(html_source)
                 if not html_path.exists():
-                    raise FileNotFoundError(
-                        f"HTML file not found: {html_path}"
-                    )
+                    raise FileNotFoundError(f"HTML file not found: {html_path}")
 
                 logger.info(f"Converting HTML file: {html_path}")
                 pdfkit.from_file(
@@ -157,14 +155,14 @@ class HTMLConverter:
                     "Ubuntu/Debian: sudo apt-get install wkhtmltopdf\n"
                     "macOS: brew install wkhtmltopdf\n"
                     "Windows: Download from https://wkhtmltopdf.org/downloads.html"
-                )
+                ) from e
             raise
 
     def from_string(
         self,
         html_string: str,
-        output_path: Union[str, Path],
-        options: Optional[Dict[str, Any]] = None,
+        output_path: str | Path,
+        options: dict[str, Any] | None = None,
     ) -> str:
         """
         Convert HTML string directly to PDF.
@@ -204,9 +202,7 @@ class HTMLConverter:
             # Configuration for pdfkit
             config = None
             if self.wkhtmltopdf_path:
-                config = pdfkit.configuration(
-                    wkhtmltopdf=self.wkhtmltopdf_path
-                )
+                config = pdfkit.configuration(wkhtmltopdf=self.wkhtmltopdf_path)
 
             # Convert HTML string to PDF
             pdfkit.from_string(
